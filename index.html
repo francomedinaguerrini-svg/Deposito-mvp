@@ -35,7 +35,7 @@ fetch('stock.csv')
     const table = document.getElementById('table');
 
     rows.forEach(row => {
-      const cols = row.split(',');
+      const cols = row.split(';');
       if (cols.length < 4) return;
 
       const tr = document.createElement('tr');
