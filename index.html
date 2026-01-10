@@ -4,18 +4,43 @@
   <meta charset="UTF-8">
   <title>Depósito - Stock</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 6px;
+      text-align: left;
+    }
+    th {
+      background: #f2f2f2;
+    }
+  </style>
 </head>
 <body>
+
   <h2>Stock del Depósito</h2>
 
   <input
     type="text"
     id="search"
-    placeholder="Buscar artículo o descripción"
-    style="width:100%; padding:10px; font-size:16px;"
+    placeholder="Buscar por artículo o descripción"
   >
 
-  <table border="1" width="100%" style="margin-top:10px;">
+  <table>
     <thead>
       <tr>
         <th>Artículo</th>
@@ -35,7 +60,12 @@ fetch('stock.csv')
     const table = document.getElementById('table');
 
     rows.forEach(row => {
-      const cols = row.split(';');
+      if (!row.trim()) return;
+
+      const cols = row
+        .split(';')
+        .map(c => c.replace(/"/g, '').trim());
+
       if (cols.length < 4) return;
 
       const tr = document.createElement('tr');
@@ -55,7 +85,12 @@ fetch('stock.csv')
           r.innerText.toLowerCase().includes(q) ? '' : 'none';
       });
     });
+  })
+  .catch(err => {
+    alert('Error cargando stock.csv');
+    console.error(err);
   });
 </script>
+
 </body>
 </html>
