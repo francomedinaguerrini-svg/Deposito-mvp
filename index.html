@@ -4,16 +4,21 @@
   <meta charset="UTF-8">
   <title>Depósito - Stock</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
   <style>
     body {
       font-family: Arial, sans-serif;
-      padding: 10px;
+      padding: 12px;
+      background: #ffffff;
+    }
+    h2 {
+      margin-bottom: 10px;
     }
     input {
       width: 100%;
       padding: 10px;
       font-size: 16px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
     }
     table {
       width: 100%;
@@ -26,10 +31,14 @@
       text-align: left;
     }
     th {
-      background: #f2f2f2;
+      background: #f0f0f0;
+    }
+    tr:nth-child(even) {
+      background: #fafafa;
     }
   </style>
 </head>
+
 <body>
 
   <h2>Stock del Depósito</h2>
@@ -53,16 +62,21 @@
   </table>
 
 <script>
-fetch('stock.csv')
-  .then(r => r.text())
+fetch('/stock.csv')
+  .then(response => {
+    if (!response.ok) {
+      throw new Error('No se pudo cargar stock.csv');
+    }
+    return response.text();
+  })
   .then(text => {
-    const rows = text.split('\n').slice(1);
+    const lines = text.split('\n');
     const table = document.getElementById('table');
 
-    rows.forEach(row => {
-      if (!row.trim()) return;
+    lines.slice(1).forEach(line => {
+      if (!line.trim()) return;
 
-      const cols = row
+      const cols = line
         .split(';')
         .map(c => c.replace(/"/g, '').trim());
 
@@ -80,14 +94,14 @@ fetch('stock.csv')
 
     document.getElementById('search').addEventListener('input', e => {
       const q = e.target.value.toLowerCase();
-      [...table.rows].forEach(r => {
-        r.style.display =
-          r.innerText.toLowerCase().includes(q) ? '' : 'none';
+      Array.from(table.rows).forEach(row => {
+        row.style.display =
+          row.innerText.toLowerCase().includes(q) ? '' : 'none';
       });
     });
   })
   .catch(err => {
-    alert('Error cargando stock.csv');
+    alert('Error cargando el archivo de stock');
     console.error(err);
   });
 </script>
