@@ -2,16 +2,38 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Stock</title>
+  <title>Stock de Neumáticos</title>
   <style>
-    table { border-collapse: collapse; }
-    th, td { border: 1px solid #000; padding: 4px; }
-    th { background: #eee; }
+    body { font-family: Arial, sans-serif; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #000; padding: 4px; font-size: 13px; }
+    th { background: #eee; position: sticky; top: 0; }
+    .bajo { background-color: #f8caca; }
+    .controles { margin-bottom: 10px; display: flex; flex-wrap: wrap; gap: 10px; }
+    input, select { padding: 6px; }
   </style>
 </head>
 <body>
 
 <h2>Stock de Neumáticos</h2>
+
+<div class="controles">
+  <input
+    type="text"
+    id="buscador"
+    placeholder="Buscar artículo, medida, proveedor"
+  >
+
+  <select id="proveedor">
+    <option value="">Todos los proveedores</option>
+  </select>
+
+  <select id="orden">
+    <option value="">Ordenar</option>
+    <option value="stockAsc">Stock menor → mayor</option>
+    <option value="stockDesc">Stock mayor → menor</option>
+  </select>
+</div>
 
 <table id="tabla"></table>
 
@@ -38,17 +60,67 @@ const data = [
   ["DOUBLESTAR","62006","195","60","VR","15","DH03","0","840","0"]
 ];
 
-const table = document.getElementById("tabla");
+const headers = data[0];
+let rows = data.slice(1);
 
-table.innerHTML =
-  "<tr>" +
-  data[0].map(h => `<th>${h}</th>`).join("") +
-  "</tr>" +
-  data.slice(1).map(r =>
+const tabla = document.getElementById("tabla");
+const buscador = document.getElementById("buscador");
+const proveedorSel = document.getElementById("proveedor");
+const ordenSel = document.getElementById("orden");
+
+// cargar proveedores
+[...new Set(rows.map(r => r[0]))].forEach(p => {
+  const opt = document.createElement("option");
+  opt.value = p;
+  opt.textContent = p;
+  proveedorSel.appendChild(opt);
+});
+
+function render(filas) {
+  tabla.innerHTML =
     "<tr>" +
-    r.map(c => `<td>${c}</td>`).join("") +
-    "</tr>"
-  ).join("");
+    headers.map(h => `<th>${h}</th>`).join("") +
+    "</tr>" +
+    filas.map(r => {
+      const stock = Number(r[8]) || 0;
+      return (
+        `<tr class="${stock < 20 ? "bajo" : ""}">` +
+        r.map(c => `<td>${c}</td>`).join("") +
+        "</tr>`
+      );
+    }).join("");
+}
+
+function aplicarFiltros() {
+  let filtradas = [...rows];
+
+  const q = buscador.value.toLowerCase();
+  if (q) {
+    filtradas = filtradas.filter(r =>
+      r.join(" ").toLowerCase().includes(q)
+    );
+  }
+
+  if (proveedorSel.value) {
+    filtradas = filtradas.filter(r => r[0] === proveedorSel.value);
+  }
+
+  if (ordenSel.value === "stockAsc") {
+    filtradas.sort((a,b) => (Number(a[8])||0) - (Number(b[8])||0));
+  }
+
+  if (ordenSel.value === "stockDesc") {
+    filtradas.sort((a,b) => (Number(b[8])||0) - (Number(a[8])||0));
+  }
+
+  render(filtradas);
+}
+
+buscador.addEventListener("input", aplicarFiltros);
+proveedorSel.addEventListener("change", aplicarFiltros);
+ordenSel.addEventListener("change", aplicarFiltros);
+
+render(rows);
 </script>
 
 </body>
