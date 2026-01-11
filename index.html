@@ -2,56 +2,53 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Depósito - Stock</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Stock</title>
+  <style>
+    table { border-collapse: collapse; }
+    th, td { border: 1px solid #000; padding: 4px; }
+    th { background: #eee; }
+  </style>
 </head>
 <body>
 
-<h2>Stock del Depósito</h2>
+<h2>Stock de Neumáticos</h2>
 
-<input id="search" placeholder="Buscar artículo o descripción" style="width:100%;padding:8px">
-
-<table border="1" width="100%">
-  <thead>
-    <tr>
-      <th>Artículo</th>
-      <th>Descripción</th>
-      <th>Stock</th>
-      <th>Tránsito</th>
-    </tr>
-  </thead>
-  <tbody id="table"></tbody>
-</table>
+<table id="tabla"></table>
 
 <script>
-fetch('/stock.csv')
-  .then(r => r.text())
-  .then(text => {
-    const rows = text.split('\n').slice(1);
-    const table = document.getElementById('table');
+const data = [
+  ["Proveedor","Articulo","Diametro","Seccion","Tipo","Llanta","Diseno","Telas","Stock","Transito"],
 
-    rows.forEach(row => {
-      if (!row.trim()) return;
-      const c = row.split(';');
-      if (c.length < 4) return;
+  ["BKT","40130","17.5","","","25","BKT","16","20","0"],
+  ["DENGOM S.A.","380","175","65","R","14","FIRES RE740","0","1","0"],
+  ["DIAMONDBACK","55186","295","80","MR","22.5","DBA87","18","398","0"],
+  ["DIAMONDBACK","55182","295","80","KR","22.5","DRD09","18","182","0"],
+  ["DIAMONDBACK","55184","295","80","MR","22.5","TR686","18","215","0"],
+  ["DIAMONDBACK","55180","295","80","LR","22.5","TRD06","16","86","0"],
+  ["DOUBLESTAR","62114","165","70","TR","13","DH03","4","587","0"],
+  ["DOUBLESTAR","62045","165","70","TR","13","DH05","0","560","0"],
+  ["DOUBLESTAR","62046","175","65","DH03","14","DH03","0","69","0"],
+  ["DOUBLESTAR","62001","175","70","HR","14","DH03","0","82","0"],
+  ["DOUBLESTAR","62002","185","60","HR","14","DH08","0","318","0"],
+  ["DOUBLESTAR","62003","185","65","HR","14","DH03","","1","0"],
+  ["DOUBLESTAR","62004","185","70","HR","14","DH03","0","13","0"],
+  ["DOUBLESTAR","62018","185","60","HR","15","DH03","0","288","0"],
+  ["DOUBLESTAR","62019","185","65","HR","15","DH05","0","868","0"],
+  ["DOUBLESTAR","62005","195","55","VR","15","DH03","0","984","0"],
+  ["DOUBLESTAR","62006","195","60","VR","15","DH03","0","840","0"]
+];
 
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${c[0]}</td>
-        <td>${c[1]}</td>
-        <td>${c[2]}</td>
-        <td>${c[3]}</td>
-      `;
-      table.appendChild(tr);
-    });
+const table = document.getElementById("tabla");
 
-    document.getElementById('search').oninput = e => {
-      const q = e.target.value.toLowerCase();
-      [...table.rows].forEach(r => {
-        r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
-      });
-    };
-  });
+table.innerHTML =
+  "<tr>" +
+  data[0].map(h => `<th>${h}</th>`).join("") +
+  "</tr>" +
+  data.slice(1).map(r =>
+    "<tr>" +
+    r.map(c => `<td>${c}</td>`).join("") +
+    "</tr>"
+  ).join("");
 </script>
 
 </body>
